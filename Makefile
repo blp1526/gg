@@ -2,7 +2,7 @@
 
 build:
 	@mkdir -p tmp
-	@go build -o tmp/gg
+	@go build -o tmp/gg cmd/gg/gg.go
 
 install:
 	@mv tmp/gg ${GOPATH}/bin
