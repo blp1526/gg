@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/url"
 	"os/exec"
-	"runtime"
 	"strings"
 )
 
@@ -14,12 +13,13 @@ var Version string = "0.0.1"
 
 const (
 	ExitCodeOK = iota
-	ExitCodeParseFlagError
+	ExitCodeNG
 )
 
 type CLI struct {
 	OutStream io.Writer
 	ErrStream io.Writer
+	OS        string
 }
 
 func (cli *CLI) Run(args []string) (exitCode int) {
@@ -33,7 +33,7 @@ func (cli *CLI) Run(args []string) (exitCode int) {
 
 	err := flags.Parse(args)
 	if err != nil {
-		return ExitCodeParseFlagError
+		return ExitCodeNG
 	}
 
 	if optV || optVersion {
@@ -41,15 +41,10 @@ func (cli *CLI) Run(args []string) (exitCode int) {
 		return ExitCodeOK
 	}
 
-	var opener string
-	switch runtime.GOOS {
-	case "linux":
-		opener = "xdg-open"
-	case "darwin":
-		opener = "open"
-	default:
+	opener := cli.Opener()
+	if opener == "" {
 		fmt.Fprintf(cli.OutStream, "Unsupported OS")
-		return 1
+		return ExitCodeNG
 	}
 
 	params := url.Values{}
@@ -60,7 +55,19 @@ func (cli *CLI) Run(args []string) (exitCode int) {
 	err = cmd.Run()
 	if err != nil {
 		fmt.Fprintf(cli.OutStream, "%s\n", err)
-		return 1
+		return ExitCodeNG
 	}
 	return ExitCodeOK
+}
+
+func (cli *CLI) Opener() (opener string) {
+	switch cli.OS {
+	case "linux":
+		opener = "xdg-open"
+	case "darwin":
+		opener = "open"
+	default:
+		opener = ""
+	}
+	return opener
 }
