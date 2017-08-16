@@ -16,6 +16,16 @@ const (
 	ExitCodeNG
 )
 
+const CLIName = "gg"
+
+const Help = `
+usage:
+  %s [option] [word word word...]
+        search words by the default web browser
+
+option:
+`
+
 type CLI struct {
 	OutStream io.Writer
 	ErrStream io.Writer
@@ -23,38 +33,38 @@ type CLI struct {
 }
 
 func (cli *CLI) Run(args []string) (exitCode int) {
-	flags := flag.NewFlagSet("gg", flag.ContinueOnError)
-	flags.SetOutput(cli.ErrStream)
+	ggFlag := flag.NewFlagSet(CLIName, flag.ContinueOnError)
+	ggFlag.SetOutput(cli.ErrStream)
+	ggFlag.Usage = func() {
+		fmt.Fprintf(cli.ErrStream, Help, CLIName)
+		ggFlag.PrintDefaults()
+	}
 
-	var optV bool
 	var optVersion bool
-	flags.BoolVar(&optV, "V", false, "")
-	flags.BoolVar(&optVersion, "version", false, "")
+	ggFlag.BoolVar(&optVersion, "version", false, "print version and exit")
 
-	err := flags.Parse(args)
+	err := ggFlag.Parse(args)
 	if err != nil {
 		return ExitCodeNG
 	}
 
-	if optV || optVersion {
-		fmt.Fprintf(cli.OutStream, "gg version %s\n", Version)
+	if optVersion {
+		fmt.Fprintf(cli.OutStream, "%s version %s\n", CLIName, Version)
 		return ExitCodeOK
 	}
 
 	opener := cli.Opener()
 	if opener == "" {
-		fmt.Fprintf(cli.OutStream, "Unsupported OS")
+		fmt.Fprintf(cli.ErrStream, "Unsupported OS")
 		return ExitCodeNG
 	}
 
-	params := url.Values{}
-	params.Add("q", strings.Join(flags.Args(), " "))
-	url := "https://www.google.co.jp/search?" + params.Encode()
-	fmt.Printf("%s %s\n", opener, url)
-	cmd := exec.Command(opener, url)
+	addr := cli.Addr(ggFlag.Args())
+	fmt.Fprintf(cli.OutStream, "%s %s\n", opener, addr)
+	cmd := exec.Command(opener, addr)
 	err = cmd.Run()
 	if err != nil {
-		fmt.Fprintf(cli.OutStream, "%s\n", err)
+		fmt.Fprintf(cli.ErrStream, "%s\n", err)
 		return ExitCodeNG
 	}
 	return ExitCodeOK
@@ -70,4 +80,11 @@ func (cli *CLI) Opener() (opener string) {
 		opener = ""
 	}
 	return opener
+}
+
+func (cli *CLI) Addr(words []string) (addr string) {
+	params := url.Values{}
+	params.Add("q", strings.Join(words, " "))
+	addr = "https://www.google.co.jp/search?" + params.Encode()
+	return addr
 }
