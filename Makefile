@@ -1,3 +1,6 @@
+VERSION = $(shell git describe --dirty --tags)
+LDFLAGS = -ldflags "-X github.com/blp1526/gg.Version="$(VERSION)
+
 .PHONY: all
 all: build
 
@@ -13,7 +16,7 @@ tmp: test
 
 .PHONY: build
 build: tmp
-	go build -o tmp/gg cmd/gg/gg.go
+	go build $(LDFLAGS) -o tmp/gg cmd/gg/gg.go
 	@echo
 
 .PHONY: install
