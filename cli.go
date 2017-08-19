@@ -101,7 +101,7 @@ func (cli *CLI) Addr(words []string) (addr string) {
 func (cli *CLI) Version(v string) (string, error) {
 	a := strings.Split(v, "-")
 	if len(a) > 2 {
-		return fmt.Sprintf("%s version %s, build %s", CLIName, a[0], a[2]), nil
+		return fmt.Sprintf("%s version %s, build %s", CLIName, a[0][1:], a[2]), nil
 	}
 	return "", fmt.Errorf("\"%s\" is not expected string format.", v)
 }
