@@ -42,6 +42,8 @@ func (cli *CLI) Run(args []string) (exitCode int) {
 
 	var optVersion bool
 	ggFlag.BoolVar(&optVersion, "version", false, "print version and exit")
+	var optDryRun bool
+	ggFlag.BoolVar(&optDryRun, "dry-run", false, "print command line only and exit")
 
 	err := ggFlag.Parse(args)
 	if err != nil {
@@ -66,6 +68,11 @@ func (cli *CLI) Run(args []string) (exitCode int) {
 
 	addr := cli.Addr(ggFlag.Args())
 	fmt.Fprintf(cli.OutStream, "%s %s\n", opener, addr)
+
+	if optDryRun {
+		return ExitCodeOK
+	}
+
 	cmd := exec.Command(opener, addr)
 	err = cmd.Run()
 	if err != nil {
