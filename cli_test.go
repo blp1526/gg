@@ -1,6 +1,9 @@
 package gg
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
 func TestCLIOpener(t *testing.T) {
 	tests := []struct {
@@ -84,6 +87,53 @@ func TestCLIVersion(t *testing.T) {
 		}
 		if got != test.want {
 			t.Errorf("got: %s, test.want: %s", got, test.want)
+		}
+	}
+}
+
+func TestCLIRun(t *testing.T) {
+	tests := []struct {
+		version   string
+		args      []string
+		want      int
+		outStream []byte
+		errStream []byte
+	}{
+		{
+			version:   "foobarbaz",
+			args:      []string{"--version"},
+			want:      1,
+			outStream: nil,
+			errStream: []byte("\"foobarbaz\" is not expected string format.\n"),
+		},
+		{
+			version:   "v0.0.1-2-gcbaffea-dirty",
+			args:      []string{"--version"},
+			want:      0,
+			outStream: []byte("gg version 0.0.1, build gcbaffea\n"),
+			errStream: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		Version = tt.version
+		outStream := &bytes.Buffer{}
+		errStream := &bytes.Buffer{}
+		cli := &CLI{
+			OutStream: outStream,
+			ErrStream: errStream,
+			OS:        "linux",
+		}
+		got := cli.Run(tt.args)
+
+		if got != tt.want {
+			t.Errorf("got: %d, tt.want: %d", got, tt.want)
+		}
+		if bytes.Compare(outStream.Bytes(), tt.outStream) != 0 {
+			t.Errorf("outStream: %s, tt.outStream: %s", string(outStream.Bytes()), string(tt.outStream))
+		}
+		if bytes.Compare(errStream.Bytes(), tt.errStream) != 0 {
+			t.Errorf("errStream: %v, tt.errStream: %v", string(errStream.Bytes()), string(tt.errStream))
 		}
 	}
 }
