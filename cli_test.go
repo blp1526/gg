@@ -98,6 +98,7 @@ func TestCLIRun(t *testing.T) {
 		want      int
 		outStream []byte
 		errStream []byte
+		os        string
 	}{
 		{
 			version:   "foobarbaz",
@@ -105,6 +106,7 @@ func TestCLIRun(t *testing.T) {
 			want:      1,
 			outStream: nil,
 			errStream: []byte("\"foobarbaz\" is not expected string format.\n"),
+			os:        "linux",
 		},
 		{
 			version:   "v0.0.1-2-gcbaffea-dirty",
@@ -112,6 +114,23 @@ func TestCLIRun(t *testing.T) {
 			want:      0,
 			outStream: []byte("gg version 0.0.1, build gcbaffea\n"),
 			errStream: nil,
+			os:        "linux",
+		},
+		{
+			version:   "v0.0.1-2-gcbaffea-dirty",
+			args:      []string{"foo", "bar", "baz"},
+			want:      1,
+			outStream: nil,
+			errStream: []byte("Unsupported OS"),
+			os:        "windows",
+		},
+		{
+			version:   "v0.0.1-2-gcbaffea-dirty",
+			args:      []string{"--dry-run", "foo", "bar", "baz"},
+			want:      0,
+			outStream: []byte("xdg-open https://www.google.co.jp/search?q=foo+bar+baz\n"),
+			errStream: nil,
+			os:        "linux",
 		},
 	}
 
@@ -122,7 +141,7 @@ func TestCLIRun(t *testing.T) {
 		cli := &CLI{
 			OutStream: outStream,
 			ErrStream: errStream,
-			OS:        "linux",
+			OS:        tt.os,
 		}
 		got := cli.Run(tt.args)
 
