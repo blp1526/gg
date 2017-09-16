@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os/exec"
 	"strings"
 )
 
@@ -30,6 +29,7 @@ type CLI struct {
 	OutStream io.Writer
 	ErrStream io.Writer
 	OS        string
+	Runner    Runner
 }
 
 func (cli *CLI) Run(args []string) (exitCode int) {
@@ -73,8 +73,7 @@ func (cli *CLI) Run(args []string) (exitCode int) {
 		return ExitCodeOK
 	}
 
-	cmd := exec.Command(opener, addr)
-	err = cmd.Run()
+	_, err = cli.Runner.CombinedOutput(opener, addr)
 	if err != nil {
 		fmt.Fprintf(cli.ErrStream, "%s\n", err)
 		return ExitCodeNG

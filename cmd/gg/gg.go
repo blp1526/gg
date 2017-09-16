@@ -12,6 +12,7 @@ func main() {
 		OutStream: os.Stdout,
 		ErrStream: os.Stderr,
 		OS:        runtime.GOOS,
+		Runner:    &gg.RealRunner{},
 	}
 	exitCode := cli.Run(os.Args[1:])
 	os.Exit(exitCode)

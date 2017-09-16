@@ -93,44 +93,74 @@ func TestCLIVersion(t *testing.T) {
 
 func TestCLIRun(t *testing.T) {
 	tests := []struct {
+		testDesc  string
 		version   string
 		args      []string
 		want      int
 		outStream []byte
 		errStream []byte
 		os        string
+		runner    Runner
 	}{
 		{
+			testDesc:  "Version output failure",
 			version:   "foobarbaz",
 			args:      []string{"--version"},
 			want:      1,
 			outStream: nil,
 			errStream: []byte("\"foobarbaz\" is not expected string format.\n"),
 			os:        "linux",
+			runner:    &MockRunner{},
 		},
 		{
+			testDesc:  "Version output success",
 			version:   "v0.0.1-2-gcbaffea-dirty",
 			args:      []string{"--version"},
 			want:      0,
 			outStream: []byte("gg version 0.0.1, build gcbaffea\n"),
 			errStream: nil,
 			os:        "linux",
+			runner:    &MockRunner{},
 		},
 		{
+			testDesc:  "Unsupported OS",
 			version:   "v0.0.1-2-gcbaffea-dirty",
 			args:      []string{"foo", "bar", "baz"},
 			want:      1,
 			outStream: nil,
 			errStream: []byte("Unsupported OS"),
 			os:        "windows",
+			runner:    &MockRunner{},
 		},
 		{
+			testDesc:  "Dry run",
 			version:   "v0.0.1-2-gcbaffea-dirty",
 			args:      []string{"--dry-run", "foo", "bar", "baz"},
 			want:      0,
 			outStream: []byte("xdg-open https://www.google.co.jp/search?q=foo+bar+baz\n"),
 			errStream: nil,
 			os:        "linux",
+			runner:    &MockRunner{},
+		},
+		{
+			testDesc:  "Command failure",
+			version:   "v0.0.1-2-gcbaffea-dirty",
+			args:      []string{"err", "case"},
+			want:      1,
+			outStream: []byte("xdg-open https://www.google.co.jp/search?q=err+case\n"),
+			errStream: []byte("err+case\n"),
+			os:        "linux",
+			runner:    &MockRunner{},
+		},
+		{
+			testDesc:  "Command success",
+			version:   "v0.0.1-2-gcbaffea-dirty",
+			args:      []string{"foo", "bar", "baz"},
+			want:      0,
+			outStream: []byte("xdg-open https://www.google.co.jp/search?q=foo+bar+baz\n"),
+			errStream: nil,
+			os:        "linux",
+			runner:    &MockRunner{},
 		},
 	}
 
@@ -142,17 +172,20 @@ func TestCLIRun(t *testing.T) {
 			OutStream: outStream,
 			ErrStream: errStream,
 			OS:        tt.os,
+			Runner:    tt.runner,
 		}
 		got := cli.Run(tt.args)
 
 		if got != tt.want {
-			t.Errorf("got: %d, tt.want: %d", got, tt.want)
+			t.Errorf("testDesc: %d, got: %d, tt.want: %d", tt.testDesc, got, tt.want)
 		}
 		if bytes.Compare(outStream.Bytes(), tt.outStream) != 0 {
-			t.Errorf("outStream: %s, tt.outStream: %s", string(outStream.Bytes()), string(tt.outStream))
+			t.Errorf("testDesc: %d, outStream: %s, tt.outStream: %s",
+				tt.testDesc, string(outStream.Bytes()), string(tt.outStream))
 		}
 		if bytes.Compare(errStream.Bytes(), tt.errStream) != 0 {
-			t.Errorf("errStream: %v, tt.errStream: %v", string(errStream.Bytes()), string(tt.errStream))
+			t.Errorf("testDesc: %d, errStream: %v, tt.errStream: %v",
+				tt.testDesc, string(errStream.Bytes()), string(tt.errStream))
 		}
 	}
 }
