@@ -80,10 +80,10 @@ func TestCLIVersion(t *testing.T) {
 		cli := &CLI{}
 		got, err := cli.Version(test.v)
 		if test.err && err == nil {
-			t.Errorf("test.err: %s, err: %s", test.err, err)
+			t.Errorf("test.err: %v, err: %v", test.err, err)
 		}
 		if !test.err && err != nil {
-			t.Errorf("test.err: %s, err: %s", test.err, err)
+			t.Errorf("test.err: %v, err: %v", test.err, err)
 		}
 		if got != test.want {
 			t.Errorf("got: %s, test.want: %s", got, test.want)
@@ -177,14 +177,14 @@ func TestCLIRun(t *testing.T) {
 		got := cli.Run(tt.args)
 
 		if got != tt.want {
-			t.Errorf("testDesc: %d, got: %d, tt.want: %d", tt.testDesc, got, tt.want)
+			t.Errorf("testDesc: %v, got: %d, tt.want: %d", tt.testDesc, got, tt.want)
 		}
 		if bytes.Compare(outStream.Bytes(), tt.outStream) != 0 {
-			t.Errorf("testDesc: %d, outStream: %s, tt.outStream: %s",
+			t.Errorf("testDesc: %v, outStream: %s, tt.outStream: %s",
 				tt.testDesc, string(outStream.Bytes()), string(tt.outStream))
 		}
 		if bytes.Compare(errStream.Bytes(), tt.errStream) != 0 {
-			t.Errorf("testDesc: %d, errStream: %v, tt.errStream: %v",
+			t.Errorf("testDesc: %v, errStream: %v, tt.errStream: %v",
 				tt.testDesc, string(errStream.Bytes()), string(tt.errStream))
 		}
 	}
