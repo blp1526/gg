@@ -4,8 +4,12 @@ LDFLAGS = -ldflags "-X github.com/blp1526/gg.Version="$(VERSION)
 .PHONY: all
 all: build
 
+.PHONY: vet
+vet:
+	go vet ./...
+
 .PHONY: test
-test:
+test: vet
 	go test -v --cover ./...
 	@echo
 
