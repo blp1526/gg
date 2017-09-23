@@ -109,5 +109,5 @@ func (cli *CLI) Version(v string) (string, error) {
 	if len(a) > 2 {
 		return fmt.Sprintf("%s version %s, build %s", CLIName, a[0][1:], a[2]), nil
 	}
-	return "", fmt.Errorf("\"%s\" is not expected string format.", v)
+	return "", fmt.Errorf("\"%s\" is not expected string format", v)
 }
