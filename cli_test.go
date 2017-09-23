@@ -108,7 +108,7 @@ func TestCLIRun(t *testing.T) {
 			args:      []string{"--version"},
 			want:      1,
 			outStream: nil,
-			errStream: []byte("\"foobarbaz\" is not expected string format.\n"),
+			errStream: []byte("\"foobarbaz\" is not expected string format\n"),
 			os:        "linux",
 			runner:    &MockRunner{},
 		},
