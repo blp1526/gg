@@ -103,6 +103,28 @@ func TestCLIRun(t *testing.T) {
 		runner    Runner
 	}{
 		{
+			testDesc:  "Flag parse failure",
+			version:   "foobarbaz",
+			args:      []string{"---------"},
+			want:      1,
+			outStream: nil,
+			errStream: []byte(
+				`bad flag syntax: ---------
+
+usage:
+  gg [option] [word word word...]
+        search words by the default web browser
+
+option:
+  -dry-run
+    	print command line only and exit
+  -version
+    	print version and exit
+`),
+			os:     "linux",
+			runner: &MockRunner{},
+		},
+		{
 			testDesc:  "Version output failure",
 			version:   "foobarbaz",
 			args:      []string{"--version"},
