@@ -32,3 +32,14 @@ install: build
 clean:
 	rm -rf tmp
 	@echo
+
+.PHONY: tagging
+tagging:
+	git tag -a ${TAG} -m "${TAG} release"
+	git push origin ${TAG}
+	@echo
+
+.PHONY: release
+release:
+	goreleaser --rm-dist
+	@echo

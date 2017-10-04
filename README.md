@@ -6,9 +6,7 @@ A CLI tool to search words by the default web browser
 
 ## Installation
 
-```
-$ make install
-```
+Download a binary from [here](https://github.com/blp1526/gg/releases).
 
 ## Usage
 
