@@ -10,8 +10,6 @@ builds:
 
 archive:
   format: tar.gz
-  files:
-    - README.md
 
 release:
   github:
