@@ -1,4 +1,4 @@
-VERSION = $(shell git describe --dirty --tags)
+VERSION = $(shell git describe --always --dirty --tags)
 LDFLAGS = -ldflags "-X github.com/blp1526/gg.Version="$(VERSION)
 
 .PHONY: all

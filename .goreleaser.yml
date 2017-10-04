@@ -1,0 +1,19 @@
+builds:
+  - binary: gg
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+    main: cmd/gg/gg.go
+    ldflags: -X github.com/blp1526/gg.Version={{.Version}}
+
+archive:
+  format: tar.gz
+  files:
+    - README.md
+
+release:
+  github:
+    owner: blp1526
+    name: gg
