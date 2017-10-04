@@ -62,29 +62,16 @@ func TestCLIVersion(t *testing.T) {
 	tests := []struct {
 		v    string
 		want string
-		err  bool
 	}{
 		{
-			v:    "v0.0.1-2-gcbaffea-dirty",
-			want: "gg version 0.0.1, build gcbaffea",
-			err:  false,
-		},
-		{
-			v:    "fatal: No names found, cannot describe anything.",
-			want: "",
-			err:  true,
+			v:    "0.0.1",
+			want: "gg version 0.0.1",
 		},
 	}
 
 	for _, test := range tests {
 		cli := &CLI{}
-		got, err := cli.Version(test.v)
-		if test.err && err == nil {
-			t.Errorf("test.err: %v, err: %v", test.err, err)
-		}
-		if !test.err && err != nil {
-			t.Errorf("test.err: %v, err: %v", test.err, err)
-		}
+		got := cli.Version(test.v)
 		if got != test.want {
 			t.Errorf("got: %s, test.want: %s", got, test.want)
 		}
@@ -125,28 +112,18 @@ option:
 			runner: &MockRunner{},
 		},
 		{
-			testDesc:  "Version output failure",
-			version:   "foobarbaz",
-			args:      []string{"--version"},
-			want:      1,
-			outStream: nil,
-			errStream: []byte("\"foobarbaz\" is not expected string format\n"),
-			os:        "linux",
-			runner:    &MockRunner{},
-		},
-		{
 			testDesc:  "Version output success",
-			version:   "v0.0.1-2-gcbaffea-dirty",
+			version:   "0.0.1",
 			args:      []string{"--version"},
 			want:      0,
-			outStream: []byte("gg version 0.0.1, build gcbaffea\n"),
+			outStream: []byte("gg version 0.0.1\n"),
 			errStream: nil,
 			os:        "linux",
 			runner:    &MockRunner{},
 		},
 		{
 			testDesc:  "Unsupported OS",
-			version:   "v0.0.1-2-gcbaffea-dirty",
+			version:   "0.0.1",
 			args:      []string{"foo", "bar", "baz"},
 			want:      1,
 			outStream: nil,
@@ -156,7 +133,7 @@ option:
 		},
 		{
 			testDesc:  "Dry run",
-			version:   "v0.0.1-2-gcbaffea-dirty",
+			version:   "0.0.1",
 			args:      []string{"--dry-run", "foo", "bar", "baz"},
 			want:      0,
 			outStream: []byte("xdg-open https://www.google.co.jp/search?q=foo+bar+baz\n"),
@@ -166,7 +143,7 @@ option:
 		},
 		{
 			testDesc:  "Command failure",
-			version:   "v0.0.1-2-gcbaffea-dirty",
+			version:   "0.0.1",
 			args:      []string{"err", "case"},
 			want:      1,
 			outStream: []byte("xdg-open https://www.google.co.jp/search?q=err+case\n"),
@@ -176,7 +153,7 @@ option:
 		},
 		{
 			testDesc:  "Command success",
-			version:   "v0.0.1-2-gcbaffea-dirty",
+			version:   "0.0.1",
 			args:      []string{"foo", "bar", "baz"},
 			want:      0,
 			outStream: []byte("xdg-open https://www.google.co.jp/search?q=foo+bar+baz\n"),
