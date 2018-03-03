@@ -1,5 +1,8 @@
+VERSION = $(shell git describe --always --dirty --tags)
+LDFLAGS = -ldflags "-X github.com/blp1526/gg.Version="$(VERSION)
+
 .PHONY: all
-all: snapshot
+all: build
 
 .PHONY: vet
 vet:
@@ -7,11 +10,12 @@ vet:
 
 .PHONY: test
 test: vet
-	go test -v --cover ./...
+	go test ./... -v --cover -race -covermode=atomic -coverprofile=coverage.txt
 
-.PHONY: snapshot
-snapshot: test
-	goreleaser --rm-dist --snapshot
+.PHONY: build
+build: test
+	go build $(LDFLAGS) -o tmp/gg cmd/gg/gg.go
+	@echo
 
 .PHONY: clean
 clean:

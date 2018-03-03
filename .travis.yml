@@ -1,6 +1,6 @@
 language: go
-before_install:
-  - go get -u github.com/goreleaser/goreleaser
 go: 1.x
 os:
   - linux
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
