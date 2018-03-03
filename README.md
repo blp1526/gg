@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/blp1526/gg.svg?branch=master)](https://travis-ci.org/blp1526/gg)
+[![codecov](https://codecov.io/gh/blp1526/gg/branch/master/graph/badge.svg)](https://codecov.io/gh/blp1526/gg)
 
 # gg
 
